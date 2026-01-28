@@ -1,24 +1,24 @@
-# Nutzen von Node.js 20
-FROM node:20-slim
+# Wir nutzen Python statt Node.js
+FROM python:3.11-slim
 
-# Installiere TypeScript global, falls nötig
-RUN npm install -g typescript
-
+# Arbeitsverzeichnis festlegen
 WORKDIR /app
 
-# Kopiere alle Dateien (inkl. package.json und tsconfig.json)
+# System-Abhängigkeiten installieren (für manche Python-Pakete nötig)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Zuerst die Projektdateien kopieren
 COPY . .
 
-# Installiere Abhängigkeiten
-RUN npm install
-
-# Baue das Projekt (TypeScript -> JavaScript)
-# Das Google-Repo nutzt "build": "tsc"
-RUN npm run build
+# Das Python-Projekt und seine Abhängigkeiten installieren
+# "pip install ." nutzt die pyproject.toml
+RUN pip install --no-cache-dir .
 
 # Port 8080 für Cloud Run
 EXPOSE 8080
 
-# Starte den Server. 
-# Im Google-Ads-MCP landen die gebauten Dateien im Ordner /dist
-CMD ["node", "dist/index.js", "--transport", "sse"]
+# Den MCP-Server starten. 
+# Wir rufen das Modul "ads_mcp" auf und aktivieren den SSE-Modus.
+CMD ["python", "-m", "ads_mcp", "--transport", "sse"]
