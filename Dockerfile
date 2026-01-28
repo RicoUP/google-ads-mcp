@@ -1,23 +1,24 @@
-# Wir nutzen ein schlankes Node.js Image
+# Nutzen von Node.js 20
 FROM node:20-slim
 
-# Arbeitsverzeichnis im Container
+# Installiere TypeScript global, falls nötig
+RUN npm install -g typescript
+
 WORKDIR /app
 
-# Kopiere die Paket-Dateien
-COPY package*.json ./
-
-# Installiere die Abhängigkeiten
-RUN npm install
-
-# Kopiere den Rest des Codes
+# Kopiere alle Dateien (inkl. package.json und tsconfig.json)
 COPY . .
 
-# Erzeuge den "dist" Ordner (Kompiliert TypeScript zu JavaScript)
+# Installiere Abhängigkeiten
+RUN npm install
+
+# Baue das Projekt (TypeScript -> JavaScript)
+# Das Google-Repo nutzt "build": "tsc"
 RUN npm run build
 
-# Cloud Run nutzt standardmäßig Port 8080
+# Port 8080 für Cloud Run
 EXPOSE 8080
 
-# Starte den MCP-Server im SSE-Modus (für Web-Zugriff)
+# Starte den Server. 
+# Im Google-Ads-MCP landen die gebauten Dateien im Ordner /dist
 CMD ["node", "dist/index.js", "--transport", "sse"]
