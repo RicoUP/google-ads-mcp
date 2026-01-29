@@ -1,11 +1,10 @@
 import os
 import sys
-import uvicorn
 
-# Pfad-Korrektur
+# Pfad korrigieren
 sys.path.append(os.getcwd())
 
-print("--- CLOUD RUN MASTER START ---")
+print("--- MCP CLOUD RUN START-SEQUENZ ---")
 
 try:
     # Wir importieren die MCP-Instanz
@@ -15,11 +14,12 @@ try:
     # Port von Google Cloud abgreifen
     port = int(os.environ.get("PORT", 8080))
     
-    print(f"Starte Uvicorn auf 0.0.0.0:{port}...")
+    print(f"Starte SSE-Server auf Port {port}...")
     
-    # FastMCP-Instanzen haben eine fertige Web-App unter '.app'
-    # Wir starten diese direkt mit uvicorn
-    uvicorn.run(mcp.app, host="0.0.0.0", port=port)
+    # WICHTIG: Die FastMCP.run() Methode in Python 
+    # unterstützt transport="sse" und lauscht automatisch auf 0.0.0.0
+    # wenn sie in einer Cloud-Umgebung (mit gesetztem PORT) läuft.
+    mcp.run(transport="sse")
 
 except Exception as e:
     print(f"FEHLER BEIM START: {e}")
