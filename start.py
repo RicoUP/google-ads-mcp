@@ -1,24 +1,24 @@
 import os
 import sys
 
-# Pfad-Korrektur, damit das Modul ads_mcp gefunden wird
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Fix für die Pfadsuche
+sys.path.append(os.getcwd())
 
-print("--- MANUELLER START: GOOGLE ADS MCP ---")
+print("--- MCP CLOUD BOOTSTRAP ---")
 
 try:
-    # Wir importieren das Server-Objekt direkt
+    # Importiert die Instanz 'mcp' aus ads_mcp/server.py
     from ads_mcp.server import mcp
-    
-    # Port von Google Cloud Run (Standard 8080)
+    print("Server-Instanz 'mcp' erfolgreich geladen.")
+
     port = int(os.environ.get("PORT", 8080))
-    
     print(f"Starte SSE-Server auf Port {port}...")
-    
-    # Wir starten den Server direkt als SSE-Webdienst
-    # host 0.0.0.0 ist lebenswichtig für Cloud Run!
+
+    # Startet den Server im Web-Modus (SSE)
     mcp.run(transport="sse", host="0.0.0.0", port=port)
 
 except Exception as e:
-    print(f"!!! FEHLER BEIM START: {e}")
+    print(f"BOOT FEHLER: {e}")
+    import traceback
+    traceback.print_exc()
     sys.exit(1)
