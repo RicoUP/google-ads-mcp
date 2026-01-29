@@ -1,34 +1,35 @@
 import os
 import sys
-import time
 
-# Pfad-Diagnose
-current_dir = os.getcwd()
-sys.path.append(current_dir)
+# Füge das aktuelle Verzeichnis zum Python-Pfad hinzu
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-print(f"--- DIAGNOSE START ---")
-print(f"Verzeichnis: {current_dir}")
-print(f"Dateien im Verzeichnis: {os.listdir(current_dir)}")
-print(f"Python Pfad: {sys.path}")
+print("--- GOOGLE ADS MCP START-SEQUENZ ---")
 
 try:
-    print("Versuche ads_mcp.server zu importieren...")
+    # Importiert die Hauptfunktion des Google-Ads-MCP
     from ads_mcp.server import main
-    print("Import erfolgreich!")
-    
-    # Cloud Run Port abgreifen
+    print("Modul 'ads_mcp' erfolgreich geladen.")
+
+    # Port von Google Cloud Run abgreifen (Standard 8080)
     port = int(os.environ.get("PORT", 8080))
-    
-    # Argumente für den SSE-Modus simulieren
-    sys.argv = ["ads_mcp", "run", "--transport", "sse", "--host", "0.0.0.0", "--port", str(port)]
-    
-    print(f"Starte Google Ads MCP auf Port {port}...")
+
+    # Wir simulieren die Befehlszeilen-Argumente für den Web-Modus (SSE)
+    # Das ist exakt das, was Cloud Run zum Überleben braucht
+    sys.argv = [
+        "ads_mcp", 
+        "run", 
+        "--transport", "sse", 
+        "--host", "0.0.0.0", 
+        "--port", str(port)
+    ]
+
+    print(f"Server wird auf Port {port} im SSE-Modus gestartet...")
     main()
 
 except Exception as e:
-    print(f"!!! KRITISCHER FEHLER: {e}")
+    print(f"!!! KRITISCHER FEHLER BEIM START: {e}")
     import traceback
     traceback.print_exc()
-    # Wir halten den Container offen, damit du die Logs in Ruhe lesen kannst
-    time.sleep(30)
+    # Beende mit Fehler, damit Cloud Run das Log speichert
     sys.exit(1)
