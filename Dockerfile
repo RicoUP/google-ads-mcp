@@ -1,22 +1,15 @@
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
-
-# System-Tools für die Installation
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Alle Dateien kopieren
 COPY . .
 
-# Installation des Projekts
+# Installiert das Paket und das MCP-Framework
 RUN pip install --no-cache-dir .
 
-# Python-Ausgabe für die Logs sofort erzwingen
 ENV PYTHONUNBUFFERED=1
-
 EXPOSE 8080
 
-# Wir starten NUR noch unsere eigene start.py
+# Dieser Befehl MUSS ausgeführt werden
 CMD ["python", "start.py"]
