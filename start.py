@@ -11,10 +11,10 @@ try:
     from ads_mcp.server import mcp
     print("Server-Instanz 'mcp' erfolgreich geladen.")
 
-    print("Starte SSE-Server (Port wird automatisch von Bibliothek erkannt)...")
+    print("Starte SSE-Server...")
     
-    # WICHTIG: Wir entfernen 'host' und 'port'. 
-    # Die Bibliothek liest die Umgebungsvariable PORT (8080) automatisch aus.
+    # WICHTIG: Hier dürfen NUR transport="sse" stehen.
+    # KEIN 'host', KEIN 'port' - sonst stürzt es in der Cloud ab!
     mcp.run(transport="sse")
 
 except Exception as e:
