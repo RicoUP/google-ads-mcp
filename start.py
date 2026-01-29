@@ -1,28 +1,24 @@
 import os
 import sys
 
-# Pfad korrigieren
-sys.path.append(os.getcwd())
+# Pfad-Korrektur
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-print("--- MCP CLOUD RUN START-SEQUENZ ---")
+print("--- GOOGLE ADS MCP START-SEQUENZ ---")
 
 try:
-    # Wir importieren die MCP-Instanz
+    # Wir importieren das MCP-Objekt
     from ads_mcp.server import mcp
-    print("MCP Instanz erfolgreich geladen.")
+    print("Modul 'ads_mcp' und Objekt 'mcp' erfolgreich geladen.")
 
-    # Port von Google Cloud abgreifen
-    port = int(os.environ.get("PORT", 8080))
-    
-    print(f"Starte SSE-Server auf Port {port}...")
-    
-    # WICHTIG: Die FastMCP.run() Methode in Python 
-    # unterstützt transport="sse" und lauscht automatisch auf 0.0.0.0
-    # wenn sie in einer Cloud-Umgebung (mit gesetztem PORT) läuft.
+    # Wir nutzen NUR transport="sse". 
+    # Die Bibliothek bindet sich automatisch an 0.0.0.0 und den Port 8080.
+    print("Starte SSE-Server...")
     mcp.run(transport="sse")
 
 except Exception as e:
-    print(f"FEHLER BEIM START: {e}")
+    print(f"!!! KRITISCHER FEHLER BEIM START: {e}")
     import traceback
     traceback.print_exc()
+    # Wir beenden mit Fehlercode 1, damit Cloud Run den Absturz bemerkt
     sys.exit(1)
