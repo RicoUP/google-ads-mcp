@@ -1,26 +1,23 @@
-# Wir nutzen Python 3.11
 FROM python:3.11-slim
 
-# Arbeitsverzeichnis
 WORKDIR /app
 
-# System-Tools für die Installation von Google Ads Bibliotheken
+# System-Tools installieren
 RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Alle Dateien kopieren
+# Projektdateien kopieren
 COPY . .
 
-# Das Projekt installieren (liest pyproject.toml)
+# Installation (inklusive mcp-CLI)
 RUN pip install --no-cache-dir .
 
-# Python-Ausgabe für die Logs unbeschränkt lassen
+# WICHTIG: Python-Ausgabe sofort in die Logs schreiben
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8080
 
 EXPOSE 8080
 
-# STARTBEFEHL: Wir rufen die Hauptdatei des Google Ads MCP direkt auf.
-# Laut Google-Repository liegt diese unter ads_mcp/server.py
-CMD ["python", "ads_mcp/server.py", "--transport", "sse", "--host", "0.0.0.0", "--port", "8080"]
+# STARTBEFEHL: Wir nutzen den MCP-Übersetzer. 
+# Dieser sorgt dafür, dass dein Code als Webdienst (SSE) auf Port 8080 aktiv bleibt.
+CMD ["mcp", "run", "ads_mcp", "--transport", "sse", "--port", "8080"]
